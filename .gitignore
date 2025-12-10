@@ -1,4 +1,5 @@
-*.db
+# Database files are included for deployment
+# *.db excluded but visitor_feedback.db is tracked
 *.sqlite
 *.sqlite3
 __pycache__/
