@@ -27,53 +27,31 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS - GEM Museum Theme
+# Custom CSS
 st.markdown("""
     <style>
-    .main > div {padding-top: 2rem; background-color: #FDFBF7;}
-    .stMetric {
+    .main > div {padding-top: 2rem;}
+    .stMetric {background-color: #f0f2f6; padding: 15px; border-radius: 10px;}
+    h1 {color: #1f77b4;}
+    h2 {color: #ff7f0e;}
+    .spam-warning {background-color: #ffebee; padding: 10px; border-radius: 5px; border-left: 4px solid #f44336;}
+    .recommendation {background-color: #f1f8e9; padding: 10px; border-radius: 5px; margin: 5px 0;}
+    
+    /* GEM Museum colors for sidebar Quick Stats only */
+    [data-testid="stSidebar"] .stMetric {
         background: linear-gradient(135deg, #E8DCC8 0%, #D4C4A8 100%);
-        padding: 20px;
+        padding: 18px;
         border-radius: 12px;
         border-left: 4px solid #1F4788;
-        box-shadow: 0 2px 8px rgba(31, 71, 136, 0.1);
+        box-shadow: 0 2px 8px rgba(31, 71, 136, 0.15);
     }
-    h1 {
-        color: #1F4788;
-        font-family: 'Serif';
-        border-bottom: 3px solid #C19A6B;
-        padding-bottom: 10px;
+    [data-testid="stSidebar"] .stMetric label {
+        color: #2C1810 !important;
+        font-weight: 600;
     }
-    h2 {
-        color: #2C1810;
-        font-family: 'Serif';
-    }
-    .spam-warning {
-        background-color: #FFF3E0;
-        padding: 15px;
-        border-radius: 8px;
-        border-left: 5px solid #FF6B35;
-        color: #2C1810;
-    }
-    .recommendation {
-        background-color: #E8F5E9;
-        padding: 12px;
-        border-radius: 8px;
-        border-left: 4px solid #4CAF50;
-        margin: 8px 0;
-    }
-    .stTabs [data-baseweb="tab-list"] {
-        background-color: #E8DCC8;
-        border-radius: 8px;
-        padding: 4px;
-    }
-    .stTabs [data-baseweb="tab"] {
-        color: #2C1810;
-        font-weight: 500;
-    }
-    .stTabs [aria-selected="true"] {
-        background-color: #1F4788;
-        color: white;
+    [data-testid="stSidebar"] .stMetric [data-testid="stMetricValue"] {
+        color: #1F4788 !important;
+        font-weight: 700;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -185,14 +163,7 @@ with tab1:
         chart_data = pd.DataFrame([{'Survey': name, 'Responses': s['valid']} for name, s in stats.items()])
         chart_data = chart_data.sort_values('Responses', ascending=False)
         
-        # GEM Museum color scheme
-        fig = px.bar(chart_data, x='Survey', y='Responses', color='Responses', 
-                    color_continuous_scale=['#E8DCC8', '#C19A6B', '#1F4788'])
-        fig.update_layout(
-            plot_bgcolor='#FDFBF7',
-            paper_bgcolor='#FDFBF7',
-            font=dict(color='#2C1810', family='serif')
-        )
+        fig = px.bar(chart_data, x='Survey', y='Responses', color='Responses', color_continuous_scale='Teal')
         fig.update_xaxes(tickangle=-45)
         st.plotly_chart(fig, use_container_width=True)
         
@@ -204,18 +175,9 @@ with tab1:
             
             with col1:
                 rating_counts = overall_df['overall_rating'].value_counts().sort_index()
-                # GEM Museum themed colors - warm earth tones
-                colors = ['#8B4513', '#CD853F', '#DEB887', '#D4A574', '#C19A6B']
-                fig = go.Figure(data=[go.Bar(x=rating_counts.index, y=rating_counts.values, 
-                                             marker_color=[colors[int(r)-1] for r in rating_counts.index])])
-                fig.update_layout(
-                    title='Overall Rating Distribution',
-                    xaxis_title='Rating',
-                    yaxis_title='Count',
-                    plot_bgcolor='#FDFBF7',
-                    paper_bgcolor='#FDFBF7',
-                    font=dict(color='#2C1810', family='serif')
-                )
+                colors = ['#d32f2f', '#ff6f00', '#fbc02d', '#7cb342', '#388e3c']
+                fig = go.Figure(data=[go.Bar(x=rating_counts.index, y=rating_counts.values, marker_color=[colors[int(r)-1] for r in rating_counts.index])])
+                fig.update_layout(title='Overall Rating Distribution', xaxis_title='Rating', yaxis_title='Count')
                 st.plotly_chart(fig, use_container_width=True)
             
             with col2:
@@ -225,20 +187,8 @@ with tab1:
                     passives = len(overall_df[(overall_df['nps_score'] >= 7) & (overall_df['nps_score'] <= 8)])
                     promoters = len(overall_df[overall_df['nps_score'] >= 9])
                     
-                    # GEM Museum NPS colors
-                    fig = go.Figure(data=[go.Pie(
-                        labels=['Promoters', 'Passives', 'Detractors'], 
-                        values=[promoters, passives, detractors], 
-                        hole=.6, 
-                        marker_colors=['#1F4788', '#C19A6B', '#8B4513']
-                    )])
-                    fig.update_layout(
-                        title=f'NPS<br><sub>Avg: {avg_nps:.1f}/10</sub>',
-                        annotations=[dict(text=f'{avg_nps:.1f}', x=0.5, y=0.5, font_size=40, showarrow=False, font=dict(color='#2C1810'))],
-                        plot_bgcolor='#FDFBF7',
-                        paper_bgcolor='#FDFBF7',
-                        font=dict(color='#2C1810', family='serif')
-                    )
+                    fig = go.Figure(data=[go.Pie(labels=['Promoters', 'Passives', 'Detractors'], values=[promoters, passives, detractors], hole=.6, marker_colors=['#4caf50', '#ffc107', '#f44336'])])
+                    fig.update_layout(title=f'NPS<br><sub>Avg: {avg_nps:.1f}/10</sub>', annotations=[dict(text=f'{avg_nps:.1f}', x=0.5, y=0.5, font_size=40, showarrow=False)])
                     st.plotly_chart(fig, use_container_width=True)
         
     except Exception as e:
@@ -267,26 +217,15 @@ with tab2:
             
             fig = px.bar(nat_gender_counts, y='nationality', x='count', color='gender',
                         orientation='h',
-                        color_discrete_map={'Male': '#1F4788', 'Female': '#C19A6B'},
+                        color_discrete_map={'Male': '#2196f3', 'Female': '#e91e63'},
                         barmode='stack')
-            fig.update_layout(
-                xaxis_title='Count',
-                yaxis_title='Nationality',
-                plot_bgcolor='#FDFBF7',
-                paper_bgcolor='#FDFBF7',
-                font=dict(color='#2C1810', family='serif')
-            )
+            fig.update_layout(xaxis_title='Count', yaxis_title='Nationality')
             st.plotly_chart(fig, use_container_width=True)
             
             st.subheader("Gender Distribution")
             gender_counts = users_df['gender'].value_counts()
             fig = px.pie(values=gender_counts.values, names=gender_counts.index, 
-                        hole=0.4, color_discrete_sequence=['#1F4788', '#C19A6B'])
-            fig.update_layout(
-                plot_bgcolor='#FDFBF7',
-                paper_bgcolor='#FDFBF7',
-                font=dict(color='#2C1810', family='serif')
-            )
+                        hole=0.4, color_discrete_sequence=['#2196f3', '#e91e63'])
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
@@ -307,15 +246,9 @@ with tab2:
             
             fig = px.bar(lang_gender_counts, y='language', x='count', color='gender',
                         orientation='h',
-                        color_discrete_map={'Male': '#1F4788', 'Female': '#C19A6B'},
+                        color_discrete_map={'Male': '#2196f3', 'Female': '#e91e63'},
                         barmode='stack')
-            fig.update_layout(
-                xaxis_title='Count',
-                yaxis_title='Language',
-                plot_bgcolor='#FDFBF7',
-                paper_bgcolor='#FDFBF7',
-                font=dict(color='#2C1810', family='serif')
-            )
+            fig.update_layout(xaxis_title='Count', yaxis_title='Language')
             st.plotly_chart(fig, use_container_width=True)
         
     except Exception as e:
